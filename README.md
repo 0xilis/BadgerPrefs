@@ -1,6 +1,6 @@
 # BadgerPrefs
 This is how Badger handles prefs, how BadgerApp and the Badger tweak communicate.
-While Badger is kept closed source at the moment, preferences are open source since bugs/speed here will likely be most impactful.
+While Badger is kept closed source at the moment, config management is open source since bugs/speed here will likely be most impactful.
 
 # /var/Badger/
 This directory is where BadgerApp stores data for the Badger tweak. `/var/Badger/Prefs/BadgerPrefs.plist` is the majority of how it communicates, `/var/Badger/BadgeImages/` is the directory that the app stores custom images from user, and `/var/Badger/DefaultBackground/` has `BadgeRectangle.png` (if the user has no custom image set but a shape set, it uses this image then applies the shape config), as well as `BadgeEllipse.png`, which while was previously used by Badger while the first version was still being developed, it is no longer used by Badger since a rewrite, but still kept because not really any point of deleting it. This readme is going to focus on `/var/Badger/Prefs/BadgerPrefs.plist`.
