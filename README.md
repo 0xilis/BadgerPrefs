@@ -1,0 +1,2 @@
+# BadgerPrefs
+Badger pref handling
