@@ -172,10 +172,13 @@ void badgerRemoveAppCountPref(int count, NSString *prefApp, NSString *prefKey) {
     }
 }
 
-//this goes unused since the deb already comes prepackages with a blank pref file
+//tweak should already create the plist if it's not there in %ctor, but if app launches before %ctor loads this is helpful
 void badgerSetUpPrefPlist(void){
     NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
-    [badgerPlist writeToFile:preferencesDirectory atomically:YES];
+    NSError* error=nil;
+    NSPropertyListFormat format=NSPropertyListXMLFormat_v1_0;
+    NSData* data =  [NSPropertyListSerialization dataWithPropertyList:badgerPlist format:format options:NSPropertyListImmutable error:&error];
+    [data writeToFile:preferencesDirectory atomically:YES];
 }
 
 id badgerRetriveUniversalPref(NSString *prefKey) {
