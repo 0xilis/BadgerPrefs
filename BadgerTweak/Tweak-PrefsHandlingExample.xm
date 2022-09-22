@@ -13,7 +13,7 @@ NSDictionary *configInUse;
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
- if (([[self valueForKey:@"_text"]integerValue] >= [[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
+ if (([[self valueForKey:@"_text"]integerValue] >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
  int repeat = [[self valueForKey:@"_text"]integerValue];
  while (![[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",repeat]] && repeat > 0) {
    repeat -= 1;
