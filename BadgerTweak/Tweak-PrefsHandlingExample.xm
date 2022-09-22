@@ -32,11 +32,25 @@ if (repeat > 0) {
 }
 %end
 
+void badgerSetUpPrefPlist(NSString *preferencesDirectory){
+    NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
+    NSError* error=nil;
+    NSPropertyListFormat format=NSPropertyListXMLFormat_v1_0;
+    NSData* data =  [NSPropertyListSerialization dataWithPropertyList:badgerPlist format:format options:NSPropertyListImmutable error:&error];
+    [data writeToFile:preferencesDirectory atomically:YES];
+}
+
 %ctor {
     @autoreleasepool {
         // insert code here...
         // we want to move our config management in hooks as less as possible for performance, so majority of it is in ctor
         NSString *documentsDirectory = @"/var/Badger/Prefs/BadgerPrefs.plist";
+        FILE *file;
+        if ((file = fopen("/var/Badger/Prefs/BadgerPrefs.plist","r"))) {
+          fclose(file);
+        } else {
+          badgerSetUpPrefPlist(documentsDirectory);
+        }
         NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:documentsDirectory];
         NSMutableDictionary *badgerMutablePrefs = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[badgerPlist objectForKey:@"UniversalConfiguration"],@"UniversalConfiguration", nil];
         NSDictionary *configsForApps = [badgerPlist objectForKey:@"AppConfiguration"];
