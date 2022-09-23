@@ -14,16 +14,19 @@ NSDictionary *configInUse;
     configForApp = @"UniversalConfiguration";
  }
  if (([[self valueForKey:@"_text"]integerValue] >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
- int repeat = [[self valueForKey:@"_text"]integerValue];
- while (![[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",repeat]] && repeat > 0) {
-   repeat -= 1;
- }
-if (repeat > 0) {
- configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",repeat]]];
-} else {
- NSLog(@"Badger failed to get count config");
- configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
-}
+ long repeat = [[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"] allKeys]count] - 1;
+    while (!([[badgeView valueForKey:@"_text"]integerValue] >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]integerValue])) {
+        repeat--;
+        if (repeat == -1) {
+            break;
+        }
+    }
+    if (repeat == -1) {
+        NSLog(@"Badger failed to find count config for %@",configForApp);
+        configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
+    } else {
+        configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]]];
+    }
  } else {
    configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  }
