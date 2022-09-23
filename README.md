@@ -31,6 +31,9 @@ If the most prioritized config doesn't have a key that a lower config does, then
 - UniversalConfiguration -> CountSpecificConfigs:
 - UniversalConfiguration -> DefaultConfig:
 
+## Pre-Merging Prefs in %ctor
+Since it may be bad for performance to cycle through and manage inheritance each time a badge is hooked, Badger takes care of this and merges the configurations in its %ctor, so Badger can perform better.
+
 ## Should I change `/var/Badger/Prefs/BadgerPrefs.plist` by hand without the app?
 Short answer: **NO!**
 
