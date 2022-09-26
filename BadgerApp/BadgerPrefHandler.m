@@ -124,13 +124,27 @@ void badgerRemoveUniversalPref(NSString *prefKey) {
 void badgerRemoveAppPref(NSString *prefApp, NSString *prefKey) {
     NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
     if ([[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"DefaultConfig"]objectForKey:prefKey]) {
-        if (([[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"DefaultConfig"]count] == 1) && (![[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"])) {
+        if ([[[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"DefaultConfig"]allKeys]count] <= 1) {
             //if the key we're removing is the only key, remove the app config altogether, speeds up the tweak a little
-            [[badgerPlist objectForKey:@"AppConfiguration"]removeObjectForKey:prefApp];
+            if (![[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
+                [[badgerPlist objectForKey:@"AppConfiguration"]removeObjectForKey:prefApp];
+            } else {
+                [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]removeObjectForKey:@"DefaultConfig"];
+            }
         } else {
             [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"DefaultConfig"]removeObjectForKey:prefKey];
         }
         [badgerPlist writeToFile:preferencesDirectory atomically:YES];
+    } else if ([[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
+        if ([[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"DefaultConfig"]count] == 0) {
+            //If ever called with no keys, cleanup ourselves
+            if ([[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
+                [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]removeObjectForKey:@"DefaultConfig"];
+            } else {
+                [[badgerPlist objectForKey:@"AppConfiguration"]removeObjectForKey:prefApp];
+            }
+            [badgerPlist writeToFile:preferencesDirectory atomically:YES];
+        }
     }
 }
 
