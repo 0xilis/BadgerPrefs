@@ -104,7 +104,7 @@ void badgerSaveAppCountPref(int count, NSString *prefApp, NSString *prefKey, id 
         }
     
     } else {
-        if ([[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
+        if (![[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
             [[badgerPlist objectForKey:@"AppConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:prefApp];
         }
         [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
