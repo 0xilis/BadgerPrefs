@@ -8,14 +8,15 @@ NSDictionary *badgerPrefs;
 -(void)someExampleHook {
 if ([[self superview]isKindOfClass:%c(SBIconView)]) {
  SBIconView *iconView = (SBIconView *)[self superview];
+ long badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
 NSDictionary *configInUse;
  NSString *configForApp = [[iconView valueForKey:@"_icon"]applicationBundleID];
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
- if (([[self valueForKey:@"_text"]integerValue] >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
+ if ((badgeCount >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
  long repeat = [[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"] allKeys]count] - 1;
-    while (!([[badgeView valueForKey:@"_text"]integerValue] >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]integerValue])) {
+    while (!(badgeCount >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]integerValue])) {
         repeat--;
         if (repeat == -1) {
             break;
@@ -47,9 +48,9 @@ void badgerSetUpPrefPlist(NSString *preferencesDirectory){
     @autoreleasepool {
         // insert code here...
         // we want to move our config management in hooks as less as possible for performance, so majority of it is in ctor
-        NSString *documentsDirectory = @"/var/Badger/Prefs/BadgerPrefs.plist";
+        NSString *documentsDirectory = @"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist";
         FILE *file;
-        if ((file = fopen("/var/Badger/Prefs/BadgerPrefs.plist","r"))) {
+        if ((file = fopen("/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist","r"))) {
           fclose(file);
         } else {
           badgerSetUpPrefPlist(documentsDirectory);
