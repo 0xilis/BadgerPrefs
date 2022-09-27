@@ -7,7 +7,7 @@
 
 #include "BadgerPrefHandler.h"
 
-NSString *preferencesDirectory = @"/var/Badger/Prefs/BadgerPrefs.plist";
+NSString *preferencesDirectory = @"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist";
 
 void badgerSaveUniversalPref(NSString *prefKey, id prefValue) {
     NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
