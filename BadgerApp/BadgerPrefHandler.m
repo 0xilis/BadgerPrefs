@@ -153,7 +153,7 @@ void badgerRemoveUniversalCountPref(int count, NSString *prefKey) {
     if ([[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]) {
         if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]count] == 1) {
             //since we're removing the only pref the count config has, might as well free the whole count config altogether
-            if ([[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]count] == 1) {
+            if ([[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]count] <= 1) {
                 [[badgerPlist objectForKey:@"UniversalConfiguration"]removeObjectForKey:@"CountSpecificConfigs"];
             } else {
                 [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]removeObjectForKey:[NSString stringWithFormat:@"%d",count]];
@@ -186,13 +186,21 @@ void badgerRemoveAppCountPref(int count, NSString *prefApp, NSString *prefKey) {
     }
 }
 
-//tweak should already create the plist if it's not there in %ctor, but if app launches before %ctor loads this is helpful
+//this goes unused since the deb already comes prepackages with a blank pref file
 void badgerSetUpPrefPlist(void){
     NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
     NSError* error=nil;
     NSPropertyListFormat format=NSPropertyListXMLFormat_v1_0;
     NSData* data =  [NSPropertyListSerialization dataWithPropertyList:badgerPlist format:format options:NSPropertyListImmutable error:&error];
     [data writeToFile:preferencesDirectory atomically:YES];
+}
+
+void badgerSetUpPrefPlistAtSpecificLocation(NSString *specifiedDirectory){
+    NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
+    NSError* error=nil;
+    NSPropertyListFormat format=NSPropertyListXMLFormat_v1_0;
+    NSData* data =  [NSPropertyListSerialization dataWithPropertyList:badgerPlist format:format options:NSPropertyListImmutable error:&error];
+    [data writeToFile:specifiedDirectory atomically:YES];
 }
 
 id badgerRetriveUniversalPref(NSString *prefKey) {
@@ -248,4 +256,3 @@ NSArray *badgerRetriveConfigsWithAppPref(NSString *prefApp, NSString *prefKey) {
     }
     return [[NSArray alloc]initWithArray:configs];
 }
-
