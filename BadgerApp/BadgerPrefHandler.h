@@ -19,6 +19,7 @@ void badgerRemoveAppPref(NSString *prefApp, NSString *prefKey);
 void badgerRemoveUniversalCountPref(int count, NSString *prefKey);
 void badgerRemoveAppCountPref(int count, NSString *prefApp, NSString *prefKey);
 void badgerSetUpPrefPlist(void);
+void badgerSetUpPrefPlistAtSpecificLocation(NSString *specifiedDirectory);
 id badgerRetriveUniversalPref(NSString *prefKey);
 id badgerRetriveAppPref(NSString *prefApp, NSString *prefKey);
 id badgerRetriveUniversalCountPref(int count, NSString *prefKey);
