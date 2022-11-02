@@ -2,6 +2,8 @@
 This is how Badger handles prefs, how BadgerApp and the Badger tweak communicate.
 While Badger is kept closed source at the moment, config management is open source since bugs/speed here will likely be most impactful.
 
+Buy Badger on Havoc (https://havoc.app) for $0.99.
+
 ## /var/mobile/Library/Badger/
 This directory is where BadgerApp stores data for the Badger tweak. `/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist` is the majority of how it communicates, `/var/mobile/Library/Badger/BadgeImages/` is the directory that the app stores custom images from user. This readme is going to focus on `/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist`.
 
