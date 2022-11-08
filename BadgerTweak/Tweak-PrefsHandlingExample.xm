@@ -4,13 +4,26 @@
 
 NSDictionary *badgerPrefs;
 
+BOOL objectContainsIvar(Class _class, const char *name) {
+ Ivar ivar = class_getInstanceVariable(_class, name);
+ if (!ivar){
+  return nil;
+ }
+ return YES;
+}
+
 %hook SBIconBadgeView
 -(void)someExampleHook {
-if ([[self superview]isKindOfClass:%c(SBIconView)]) {
- SBIconView *iconView = (SBIconView *)[self superview];
+ NSString *configForApp;
+ if(objectContainsIvar([[self superview] class], "_imageView")) {
+  configForApp = [[[[self superview]valueForKey:@"_imageView"]valueForKey:@"_icon"]applicationBundleID];
+ } else if (objectContainsIvar([[self superview] class], "_icon")) {
+  configForApp = [[[self superview] valueForKey:@"_icon"]applicationBundleID];
+ } else {
+  return;
+ }
  long badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
-NSDictionary *configInUse;
- NSString *configForApp = [[iconView valueForKey:@"_icon"]applicationBundleID];
+ NSDictionary *configInUse;
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
@@ -32,7 +45,6 @@ NSDictionary *configInUse;
    configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  }
 //configInUse should now be the current config
-}
 }
 %end
 
