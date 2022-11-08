@@ -14,6 +14,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
 
 %hook SBIconBadgeView
 -(void)someExampleHook {
+ %orig;
  NSString *configForApp;
  if(objectContainsIvar([[self superview] class], "_imageView")) {
   configForApp = [[[[self superview]valueForKey:@"_imageView"]valueForKey:@"_icon"]applicationBundleID];
