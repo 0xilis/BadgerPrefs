@@ -1,6 +1,7 @@
 // Example of how Badger (tweak-side) handles configs
 
 #include <UIKit/UIKit.h>
+#include <objc/runtime.h>
 
 NSDictionary *badgerPrefs;
 
@@ -13,6 +14,12 @@ BOOL objectContainsIvar(Class _class, const char *name) {
 }
 
 %hook SBIconBadgeView
+%group badgeOption
+-(void)someOptionHook {
+%orig;
+//stuff
+}
+%end
 -(void)someExampleHook {
  %orig;
  NSString *configForApp;
@@ -68,17 +75,27 @@ void badgerSetUpPrefPlist(NSString *preferencesDirectory){
         } else {
           badgerSetUpPrefPlist(documentsDirectory);
         }
+        BOOL didEnableOption = NO;
         NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:documentsDirectory];
+        if ([[[[badgerPlist valueForKey:@"UniversalConfiguration"]valueForKey:@"DefaultConfig"]allKeys]containsObject:@"BadgeOption"]) {
+            didEnableOption = YES;
+        }
         NSMutableDictionary *badgerMutablePrefs = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[badgerPlist objectForKey:@"UniversalConfiguration"],@"UniversalConfiguration", nil];
         NSDictionary *configsForApps = [badgerPlist objectForKey:@"AppConfiguration"];
         if ([[badgerPlist valueForKey:@"UniversalConfiguration"]valueForKey:@"CountSpecificConfigs"]) {
         for (NSString* minimumCountForConfig in [[badgerPlist valueForKey:@"UniversalConfiguration"]valueForKey:@"CountSpecificConfigs"]) {
+            if ([[[[[badgerPlist valueForKey:@"UniversalConfiguration"]valueForKey:@"CountSpecificConfigs"]valueForKey:minimumCountForConfig]allKeys]containsObject:@"BadgeOption"]) {
+            didEnableOption = YES;
+            }
             [[[[badgerMutablePrefs valueForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]addEntriesFromDictionary:[[badgerPlist valueForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]];
         }
         }
         for (NSString* bundleID in configsForApps) {
             [badgerMutablePrefs setObject:[[NSMutableDictionary alloc]initWithDictionary:[badgerPlist objectForKey:@"UniversalConfiguration"]] forKey:bundleID]; //just adding DefaultConfig from UniversalConfiguration, since a specific app's DefaultConfig should overrule UniversalConfiguration CountsForConfig
             for (NSString *keyNameInDefault in [[configsForApps valueForKey:bundleID]valueForKey:@"DefaultConfig"]) {
+                if ([keyNameInDefault isEqualToString:@"BadgeOption"]) {
+                didEnableOption = YES;
+                }
                 NSMutableDictionary *newDefaultConfig = [[NSMutableDictionary alloc]initWithDictionary:[[badgerMutablePrefs objectForKey:bundleID]objectForKey:@"DefaultConfig"]];
                 [newDefaultConfig setObject:[[[configsForApps valueForKey:bundleID]valueForKey:@"DefaultConfig"]valueForKey:keyNameInDefault] forKey:keyNameInDefault];
                 [[badgerMutablePrefs objectForKey:bundleID]setObject:newDefaultConfig forKey:@"DefaultConfig"];
@@ -87,6 +104,9 @@ void badgerSetUpPrefPlist(NSString *preferencesDirectory){
             if ([[configsForApps valueForKey:bundleID]valueForKey:@"CountSpecificConfigs"]) {
                 [[badgerMutablePrefs objectForKey:bundleID]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
             for (NSString* minimumCountForConfig in [[configsForApps valueForKey:bundleID]valueForKey:@"CountSpecificConfigs"]) {
+                if ([[[[[configsForApps valueForKey:bundleID]valueForKey:@"CountSpecificConfigs"]valueForKey:minimumCountForConfig]allKeys]containsObject:@"BadgeOption"]) {
+            didEnableOption = YES;
+                }
                 //make the CountSpecificConfig inherit UniversalConfiguration's DefaultConfig, then add UniversalConfiguration's CountSpecificConfigs, then add the app's DefaultConfig, then add the CountSpecificConfig to that
                 [[[badgerMutablePrefs valueForKey:bundleID]objectForKey:@"CountSpecificConfigs"] setObject:[[NSMutableDictionary alloc]init] forKey:minimumCountForConfig];
                 [[[[badgerMutablePrefs valueForKey:bundleID]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]addEntriesFromDictionary:[[configsForApps valueForKey:bundleID]objectForKey:@"DefaultConfig"]];
@@ -98,5 +118,7 @@ void badgerSetUpPrefPlist(NSString *preferencesDirectory){
             }
         }
         badgerPrefs = [[NSDictionary alloc]initWithDictionary:badgerMutablePrefs];
+        if (didEnableOption) {%init(badgeOption)};
     }
+    %init(_ungrouped);
 }
