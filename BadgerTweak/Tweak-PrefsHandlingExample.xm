@@ -31,27 +31,21 @@ BOOL objectContainsIvar(Class _class, const char *name) {
   return;
  }
  long badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
- NSDictionary *configInUse;
+ NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
- if ((badgeCount >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]firstObject]integerValue]) && [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
- long repeat = [[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"] allKeys]count] - 1;
-    while (!(badgeCount >= [[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]integerValue])) {
-        repeat--;
-        if (repeat == -1) {
-            break;
-        }
+ for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
+  long currentCount = 0;
+   if (badgeCount >= [countConfigStr integerValue]) {
+    if (currentCount <= [countConfigStr integerValue]) {
+     currentCount = [countConfigStr integerValue];
     }
-    if (repeat == -1) {
-        NSLog(@"Badger failed to find count config for %@",configForApp);
-        configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
-    } else {
-        configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]allKeys]objectAtIndex:repeat]]];
-    }
- } else {
-   configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
- }
+   }
+   if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",currentCount]]) {
+    configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",currentCount]]];
+   }
+}
 //configInUse should now be the current config
 }
 %end
