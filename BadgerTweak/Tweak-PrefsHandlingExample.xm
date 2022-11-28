@@ -108,7 +108,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         badgerPrefs = [[NSDictionary alloc]initWithDictionary:badgerMutablePrefs];
         if (didEnableOption) {%init(badgeOption)};
       } else {
-        badgerPrefs = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
+        badgerPrefs = [[NSDictionary alloc]initWithObjectsAndKeys:[[NSDictionary alloc]initWithObjectsAndKeys:[[NSDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSDictionary alloc]init],@"AppConfiguration", nil];
       }
     }
         
