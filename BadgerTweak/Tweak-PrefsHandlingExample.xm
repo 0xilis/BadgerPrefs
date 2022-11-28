@@ -43,7 +43,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
        configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
      }
    }
-}
+ }
 //configInUse should now be the current config
 }
 %end
