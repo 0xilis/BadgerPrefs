@@ -31,10 +31,10 @@ BOOL objectContainsIvar(Class _class, const char *name) {
   return;
  }
  long badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
- NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
+ NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  long currentCount = 0;
  for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
    if (badgeCount >= [countConfigStr integerValue] >= currentCount) {
