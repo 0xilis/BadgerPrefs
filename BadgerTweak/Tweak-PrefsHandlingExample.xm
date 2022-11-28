@@ -65,14 +65,14 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         fclose(file);
         BOOL didEnableOption = NO;
         NSDictionary *badgerPlist = [[NSDictionary alloc]initWithContentsOfFile:@"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist"];
-        if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]allKeys]containsObject:@"BadgeOption"]) {
+        if ([[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]objectForKey:@"BadgeOption"]) {
           didEnableOption = YES;
         }
         NSMutableDictionary *badgerMutablePrefs = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[badgerPlist objectForKey:@"UniversalConfiguration"],@"UniversalConfiguration", nil];
         NSDictionary *configsForApps = [badgerPlist objectForKey:@"AppConfiguration"];
         if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
           for (NSString* minimumCountForConfig in [[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
-            if ([[[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]allKeys]containsObject:@"BadgeOption"]) {
+            if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]objectForKey:@"BadgeOption"]) {
               didEnableOption = YES;
             }
             [[[[badgerMutablePrefs objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]addEntriesFromDictionary:[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]];
@@ -92,7 +92,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
           if ([[configsForApps objectForKey:bundleID]objectForKey:@"CountSpecificConfigs"]) {
             [[badgerMutablePrefs objectForKey:bundleID]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
             for (NSString* minimumCountForConfig in [[configsForApps objectForKey:bundleID]objectForKey:@"CountSpecificConfigs"]) {
-              if ([[[[[configsForApps objectForKey:bundleID]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]allKeys]containsObject:@"BadgeOption"]) {
+              if ([[[[configsForApps objectForKey:bundleID]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]objectForKey:@"BadgeOption"]) {
                 didEnableOption = YES;
               }
               //make the CountSpecificConfig inherit UniversalConfiguration's DefaultConfig, then add UniversalConfiguration's CountSpecificConfigs, then add the app's DefaultConfig, then add the CountSpecificConfig to that
