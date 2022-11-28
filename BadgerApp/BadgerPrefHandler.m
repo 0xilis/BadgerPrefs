@@ -30,10 +30,14 @@ void badgerSaveAppPref(NSString *prefApp, NSString *prefKey, id prefValue) {
 void badgerSaveUniversalCountPref(long count, NSString *prefKey, id prefValue) {
     if (count <= 999999) {
         NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
-        if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
-            [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]setObject:[[[[badgerPlist objectForKey:@"AppConfiguration"] objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr] forKey:countConfigStr];
+        if ([[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",count]]) {
+            [[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",count]]setObject:prefValue forKey:prefKey];
         } else {
-            [[badgerPlist objectForKey:@"UniversalConfiguration"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil],[NSString stringWithFormat:@"%ld",count],nil] forKey:@"CountSpecificConfigs"];
+            if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
+                [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%ld",count]];
+            } else {
+                [[badgerPlist objectForKey:@"UniversalConfiguration"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil],[NSString stringWithFormat:@"%ld",count],nil] forKey:@"CountSpecificConfigs"];
+            }
         }
         [badgerPlist writeToFile:preferencesDirectory atomically:YES];
     }
@@ -42,13 +46,17 @@ void badgerSaveUniversalCountPref(long count, NSString *prefKey, id prefValue) {
 void badgerSaveAppCountPref(long count, NSString *prefApp, NSString *prefKey, id prefValue) {
     if (count <= 999999) {
         NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
-        if ([[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
-            [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]setObject:[[[[badgerPlist objectForKey:@"AppConfiguration"] objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr] forKey:countConfigStr];
+        if ([[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",count]]) {
+            [[[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",count]]setObject:prefValue forKey:prefKey];
         } else {
             if (![[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
                 [[badgerPlist objectForKey:@"AppConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:prefApp];
             }
-            [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil],[NSString stringWithFormat:@"%ld",count],nil] forKey:@"CountSpecificConfigs"];
+            if ([[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
+                [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%ld",count]];
+            } else {
+                [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil],[NSString stringWithFormat:@"%ld",count],nil] forKey:@"CountSpecificConfigs"];
+            }
         }
         [badgerPlist writeToFile:preferencesDirectory atomically:YES];
     }
