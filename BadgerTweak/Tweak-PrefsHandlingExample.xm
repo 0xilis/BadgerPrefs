@@ -35,15 +35,13 @@ BOOL objectContainsIvar(Class _class, const char *name) {
  if (![badgerPrefs objectForKey:configForApp]) {
     configForApp = @"UniversalConfiguration";
  }
+ long currentCount = 0;
  for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
-  long currentCount = 0;
-   if (badgeCount >= [countConfigStr integerValue]) {
-    if (currentCount <= [countConfigStr integerValue]) {
+   if (badgeCount >= [countConfigStr integerValue] >= currentCount) {
      currentCount = [countConfigStr integerValue];
-    }
-   }
-   if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",currentCount]]) {
-    configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%ld",currentCount]]];
+     if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]) {
+       configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
+     }
    }
 }
 //configInUse should now be the current config
