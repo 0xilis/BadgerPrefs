@@ -56,24 +56,15 @@ BOOL objectContainsIvar(Class _class, const char *name) {
 }
 %end
 
-void badgerSetUpPrefPlist(NSString *preferencesDirectory){
-    NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
-    NSError* error=nil;
-    NSPropertyListFormat format=NSPropertyListXMLFormat_v1_0;
-    NSData* data =  [NSPropertyListSerialization dataWithPropertyList:badgerPlist format:format options:NSPropertyListImmutable error:&error];
-    [data writeToFile:preferencesDirectory atomically:YES];
-}
-
 %ctor {
     @autoreleasepool {
       // insert code here...
       // we want to move our config management in hooks as less as possible for performance, so majority of it is in ctor
-      NSString *documentsDirectory = @"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist";
       FILE *file;
       if ((file = fopen("/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist","r"))) {
         fclose(file);
         BOOL didEnableOption = NO;
-        NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:documentsDirectory];
+        NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:@"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist"];
         if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]allKeys]containsObject:@"BadgeOption"]) {
           didEnableOption = YES;
         }
@@ -117,7 +108,6 @@ void badgerSetUpPrefPlist(NSString *preferencesDirectory){
         badgerPrefs = [[NSDictionary alloc]initWithDictionary:badgerMutablePrefs];
         if (didEnableOption) {%init(badgeOption)};
       } else {
-        badgerSetUpPrefPlist(documentsDirectory);
         badgerPrefs = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]initWithObjectsAndKeys:[[NSMutableDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSMutableDictionary alloc]init],@"AppConfiguration", nil];
       }
     }
