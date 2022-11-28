@@ -27,91 +27,32 @@ void badgerSaveAppPref(NSString *prefApp, NSString *prefKey, id prefValue) {
     [badgerPlist writeToFile:preferencesDirectory atomically:YES];
 }
 
-void badgerSaveUniversalCountPref(int count, NSString *prefKey, id prefValue) {
-    //For Custom Labels & Custom Images
-    //REMEMBER, sort countsforconfigs by least to greatest
-    //ex get maximum count config (includes one being added), make a new dict and repeat from 0 till max that if count config exists add it to new dict, and then use that new dict
-    //some problems might arrive with this approach once we get into mixing app countspecificconfigs from universalconfig with appconfigs but for now the badger app does *not* have any countspecificconfigs for an app config, so I'll worry about it later
-    //issue is tweak side and not with BadgerPrefHandler, that being even though App Counts and Universal Counts are sorted from least to greatest, when Badger merges the two it doesn't resort them
-    //maybe when that time comes, make init autosort by getting the biggest count specific config, and form new dict from that
-    //also, we limit badge count to be less than 9999, we already take this into account on our view controllers but just in case
-    if (count < 9999) {
-    NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
-    if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
-        if (![[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]) {
-            //alphabetically sort configs and create new config
-        NSMutableDictionary *newSortedCountConfigs = [[NSMutableDictionary alloc]init];
-        int max = (int)[[[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]allKeys]lastObject]integerValue];
-        if (max < count) {
-            max = count;
-        }
-        BOOL placedNewCountConfig = NO;
-        for (NSString* countConfigString in [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]allKeys]) {
-            int countConfig = (int)[countConfigString integerValue];
-            
-            if (count >= countConfig && !placedNewCountConfig) {
-                [newSortedCountConfigs setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey,nil] forKey:[NSString stringWithFormat:@"%d",count]];
-                placedNewCountConfig = YES;
-            }
-            [newSortedCountConfigs setObject:[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigString] forKey:countConfigString];
-            }
-        if (!placedNewCountConfig) {
-            [newSortedCountConfigs setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey,nil] forKey:[NSString stringWithFormat:@"%d",count]];
-        }
-            [[badgerPlist objectForKey:@"UniversalConfiguration"] setObject:newSortedCountConfigs forKey:@"CountSpecificConfigs"];
+void badgerSaveUniversalCountPref(long count, NSString *prefKey, id prefValue) {
+    if (count < 999999) {
+        NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
+        if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
+            [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]setObject:[[[[badgerPlist objectForKey:@"AppConfiguration"] objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr] forKey:countConfigStr];
         } else {
-            //if we already have the count config, we don't need to alphabetically sort
-            [[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]setObject:prefValue forKey:prefKey];
+            [[badgerPlist objectForKey:@"UniversalConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
+            [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%d",count]];
         }
-    
-    } else {
-        [[badgerPlist objectForKey:@"UniversalConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
-        [[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%d",count]];
-    }
-    [badgerPlist writeToFile:preferencesDirectory atomically:YES];
-    
+        [badgerPlist writeToFile:preferencesDirectory atomically:YES];
     }
 }
 
-void badgerSaveAppCountPref(int count, NSString *prefApp, NSString *prefKey, id prefValue) {
-    if (count < 9999) {
-    NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
-    if ([[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
-        if (![[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]) {
-            //alphabetically sort configs and create new config
-        NSMutableDictionary *newSortedCountConfigs = [[NSMutableDictionary alloc]init];
-        int max = (int)[[[[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]allKeys]lastObject]integerValue];
-        if (max < count) {
-            max = count;
-        }
-        BOOL placedNewCountConfig = NO;
-        for (NSString* countConfigString in [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]allKeys]) {
-            int countConfig = (int)[countConfigString integerValue];
-            
-            if (count >= countConfig && !placedNewCountConfig) {
-                [newSortedCountConfigs setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey,nil] forKey:[NSString stringWithFormat:@"%d",count]];
-                placedNewCountConfig = YES;
-            }
-            [newSortedCountConfigs setObject:[[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigString] forKey:countConfigString];
-            }
-        if (!placedNewCountConfig) {
-            [newSortedCountConfigs setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey,nil] forKey:[NSString stringWithFormat:@"%d",count]];
-        }
-            [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp] setObject:newSortedCountConfigs forKey:@"CountSpecificConfigs"];
+void badgerSaveAppCountPref(long count, NSString *prefApp, NSString *prefKey, id prefValue) {
+    if (count < 999999) {
+        NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:preferencesDirectory];
+        if ([[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]) {
+            [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]setObject:[[[[badgerPlist objectForKey:@"AppConfiguration"] objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr] forKey:countConfigStr];
         } else {
-            //if we already have the count config, we don't need to alphabetically sort
-            [[[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]objectForKey:[NSString stringWithFormat:@"%d",count]]setObject:prefValue forKey:prefKey];
+            if (![[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
+                [[badgerPlist objectForKey:@"AppConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:prefApp];
+            }
+            [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
+            [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%d",count]];
         }
-    
-    } else {
-        if (![[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]) {
-            [[badgerPlist objectForKey:@"AppConfiguration"]setObject:[[NSMutableDictionary alloc]init] forKey:prefApp];
-        }
-        [[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]setObject:[[NSMutableDictionary alloc]init] forKey:@"CountSpecificConfigs"];
-        [[[[badgerPlist objectForKey:@"AppConfiguration"]objectForKey:prefApp]objectForKey:@"CountSpecificConfigs"]setObject:[[NSMutableDictionary alloc]initWithObjectsAndKeys:prefValue,prefKey, nil] forKey:[NSString stringWithFormat:@"%d",count]];
-    }
-    [badgerPlist writeToFile:preferencesDirectory atomically:YES];
-    
+        [badgerPlist writeToFile:preferencesDirectory atomically:YES];
     }
 }
 
