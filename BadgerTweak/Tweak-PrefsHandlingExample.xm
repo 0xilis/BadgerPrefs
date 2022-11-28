@@ -64,7 +64,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
       if ((file = fopen("/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist","r"))) {
         fclose(file);
         BOOL didEnableOption = NO;
-        NSMutableDictionary *badgerPlist = [[NSMutableDictionary alloc]initWithContentsOfFile:@"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist"];
+        NSDictionary *badgerPlist = [[NSDictionary alloc]initWithContentsOfFile:@"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist"];
         if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]allKeys]containsObject:@"BadgeOption"]) {
           didEnableOption = YES;
         }
