@@ -37,10 +37,12 @@ BOOL objectContainsIvar(Class _class, const char *name) {
  NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  long currentCount = 999999;
  for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
-   if (badgeCount <= [countConfigStr integerValue] <= currentCount) {
-     currentCount = [countConfigStr integerValue];
-     if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]) {
-       configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
+   if (badgeCount >= [countConfigStr integerValue]) {
+     if ([countConfigStr integerValue] <= currentCount) {
+       currentCount = [countConfigStr integerValue];
+       if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]) {
+         configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
+       }
      }
    }
  }
