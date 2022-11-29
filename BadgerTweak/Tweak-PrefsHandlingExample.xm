@@ -35,9 +35,9 @@ BOOL objectContainsIvar(Class _class, const char *name) {
     configForApp = @"UniversalConfiguration";
  }
  NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
- long currentCount = 0;
+ long currentCount = 999999;
  for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
-   if (badgeCount >= [countConfigStr integerValue] >= currentCount) {
+   if (badgeCount <= [countConfigStr integerValue] <= currentCount) {
      currentCount = [countConfigStr integerValue];
      if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]) {
        configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
