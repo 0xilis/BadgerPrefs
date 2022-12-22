@@ -66,10 +66,11 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         NSDictionary *configsForApps = [badgerPlist objectForKey:@"AppConfiguration"];
         if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
           for (NSString* minimumCountForConfig in [[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
-            if ([[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]objectForKey:@"BadgeOption"]) {
-              didEnableOption = YES;
+            for (NSString* rawKeyFromConfig in [[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]) {
+              if (![[[badgerPlist objectForKey:@"UniversalConfiguration"] objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]) {
+                [[[[badgerMutablePrefs objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]setObject:[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]objectForKey:rawKeyFromConfig] forKey:rawKeyFromConfig];
+              }
             }
-            [[[[badgerMutablePrefs objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]addEntriesFromDictionary:[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]];
           }
         }
         for (NSString* bundleID in configsForApps) {
