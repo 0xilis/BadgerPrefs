@@ -67,7 +67,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         if ([[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
           for (NSString* minimumCountForConfig in [[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]) {
             for (NSString* rawKeyFromConfig in [[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]) {
-              if (![[[badgerPlist objectForKey:@"UniversalConfiguration"] objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]) {
+              if (![[[[badgerPlist objectForKey:@"UniversalConfiguration"] objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]objectForKey:rawKeyFromConfig]) {
                 [[[[badgerMutablePrefs objectForKey:@"UniversalConfiguration"]objectForKey:@"CountSpecificConfigs"]objectForKey:minimumCountForConfig]setObject:[[[badgerPlist objectForKey:@"UniversalConfiguration"]objectForKey:@"DefaultConfig"]objectForKey:rawKeyFromConfig] forKey:rawKeyFromConfig];
               }
             }
