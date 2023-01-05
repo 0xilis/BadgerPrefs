@@ -121,3 +121,43 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         
     
 }
+
+//this is confusing as all hell
+
+//BadgeColor > Universal
+    //BadgeLabel > Universal > bottom
+    //BadgeLabel > Universal > 1000 > top
+    //TestObj for App > com.apple.anothertest > Yoooo
+    //TestObj for App > com.apple.test > HelloFromAppConfig!
+    //ThirdTestObj for App > com.apple.anothertest > Huh
+    //AnotherTestObj for App > com.apple.test > 1000 > HelloFromCountSpecificConfigsOfAppConfiguration!
+    
+    //Universal should have BadgeColor and BadgeLabel(bottom), Universal(Count) should have BadgeColor and BadgeLabel(top)
+    //com.apple.test should have BadgeColor and BadgeLabel(bottom) and TestObj(HelloFromAppConfig!), com.apple.test(1000) should have BadgeColor and BadgeLabel(top) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!)
+    //com.apple.anothertest should have BadgeColor and BadgeLabel(bottom) and TestObj(Yoooo) and ThirdTestObj(Huh), com.apple.anothertest(1000) should have BadgeColor and BadgeLabel(top) and TestObj(Yoooo) and ThirdTestObj(Huh)
+    
+    //BadgeColor > Universal
+    //BadgeLabel > Universal > bottom
+    //BadgeLabel > Universal > 1000 > top
+    //TestObj for App > com.apple.anothertest > Yoooo
+    //TestObj for App > com.apple.test > HelloFromAppConfig!
+    //ThirdTestObj for App > com.apple.anothertest > Huh
+    //AnotherTestObj for App > com.apple.test > 999 > HelloFromCountSpecificConfigsOfAppConfiguration!
+    
+    //Universal should have BadgeColor and BadgeLabel(bottom), Universal(Count) should have BadgeColor and BadgeLabel(top)
+    //com.apple.test should have BadgeColor and BadgeLabel(bottom) and TestObj(HelloFromAppConfig!), com.apple.test(999) should have BadgeColor and BadgeLabel(bottom) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!), com.apple.test(1000) should have BadgeColor and BadgeLabel(top) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!)
+    //com.apple.anothertest should have BadgeColor and BadgeLabel(bottom) and TestObj(Yoooo) and ThirdTestObj(Huh), com.apple.anothertest(1000) should have BadgeColor and BadgeLabel(top) and TestObj(Yoooo) and ThirdTestObj(Huh)
+    
+    //BadgeColor > Universal
+    //BadgeLabel > Universal > bottom
+    //BadgeLabel > Universal > 1000 > top
+    //AnotherTestObj > Universal > 1000 > we
+    //TestObj for App > com.apple.anothertest > Yoooo
+    //TestObj for App > com.apple.test > HelloFromAppConfig!
+    //ThirdTestObj for App > com.apple.anothertest > Huh
+    //AnotherTestObj for App > com.apple.test > 999 > HelloFromCountSpecificConfigsOfAppConfiguration!
+    //ThirdTestObj for App > com.apple.test > 1001 > HelloFromCountSpecificConfigsOfAppConfiguration!
+    
+    //Universal should have BadgeColor and BadgeLabel(bottom), Universal(1000) should have BadgeColor and BadgeLabel(top) and AnotherTestObj(we)
+    //com.apple.test should have BadgeColor and BadgeLabel(bottom) and TestObj(HelloFromAppConfig!), com.apple.test(999) should have BadgeColor and BadgeLabel(bottom) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!), com.apple.test(1000) should have BadgeColor and BadgeLabel(top) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!), com.apple.test(1001) should have BadgeColor and BadgeLabel(top) and TestObj(HelloFromAppConfig!) and AnotherTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!) and ThirdTestObj(HelloFromCountSpecificConfigsOfAppConfiguration!)
+    //com.apple.anothertest should have BadgeColor and BadgeLabel(bottom) and TestObj(Yoooo) and ThirdTestObj(Huh), com.apple.anothertest(1000) should have BadgeColor and BadgeLabel(top) and TestObj(Yoooo) and ThirdTestObj(Huh) and AnotherTestObj(we)
