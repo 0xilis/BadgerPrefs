@@ -5,6 +5,14 @@
 
 NSDictionary *badgerPrefs;
 
+@interface SBIconBadgeView : UIView {
+	NSString* _text;
+	UIImageView *_textView;
+}
+@property (nonatomic, assign) NSString* configForApp;
+@property (nonatomic, assign) long badgerCount;
+@end
+
 BOOL objectContainsIvar(Class _class, const char *name) {
  Ivar ivar = class_getInstanceVariable(_class, name);
  if (!ivar){
@@ -14,6 +22,8 @@ BOOL objectContainsIvar(Class _class, const char *name) {
 }
 
 %hook SBIconBadgeView
+%property (nonatomic, assign) NSString* configForApp; //so we don't need to find superview each time
+%property (nonatomic, assign) long badgerCount; //so we don't need to stringByReplacingOccurrencesOfString and convert NSString to long each time
 %group badgeOption
 -(void)someOptionHook {
 %orig;
@@ -23,16 +33,23 @@ BOOL objectContainsIvar(Class _class, const char *name) {
 -(void)someExampleHook {
  %orig;
  NSString *configForApp;
- if(objectContainsIvar([[self superview] class], "_imageView")) {
-  configForApp = [[[[self superview]valueForKey:@"_imageView"]valueForKey:@"_icon"]applicationBundleID];
- } else if (objectContainsIvar([[self superview] class], "_icon")) {
-  configForApp = [[[self superview] valueForKey:@"_icon"]applicationBundleID];
+ long badgeCount;
+ if ((badgeCount = self.badgerCount)) {
+   configForApp = self.configForApp;
  } else {
-  return;
- }
- long badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
- if (![badgerPrefs objectForKey:configForApp]) {
-    configForApp = @"UniversalConfiguration";
+   if (objectContainsIvar([[self superview] class], "_imageView")) {
+     configForApp = [[[[self superview]valueForKey:@"_imageView"]valueForKey:@"_icon"]applicationBundleID];
+   } else if (objectContainsIvar([[self superview] class], "_icon")) {
+     configForApp = [[[self superview] valueForKey:@"_icon"]applicationBundleID];
+   } else {
+     return;
+   }
+   badgeCount = [[[self valueForKey:@"_text"] stringByReplacingOccurrencesOfString:@"," withString:@""]integerValue];
+   if (![badgerPrefs objectForKey:configForApp]) {
+     configForApp = @"UniversalConfiguration";
+   }
+   self.badgerCount = badgeCount;
+   self.configForApp = configForApp;
  }
  NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
  long currentCount = 999999;
@@ -41,7 +58,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
      if ([countConfigStr integerValue] <= currentCount) {
        currentCount = [countConfigStr integerValue];
        if ([[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]) {
-         configInUse = [[NSDictionary alloc]initWithDictionary:[[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr]];
+         configInUse = [[[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]objectForKey:countConfigStr];
        }
      }
    }
