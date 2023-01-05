@@ -115,10 +115,9 @@ BOOL objectContainsIvar(Class _class, const char *name) {
         }
         badgerPrefs = [[NSDictionary alloc]initWithDictionary:badgerMutablePrefs];
         if (didEnableOption) {%init(badgeOption)};
-      } else {
-        badgerPrefs = [[NSDictionary alloc]initWithObjectsAndKeys:[[NSDictionary alloc]initWithObjectsAndKeys:[[NSDictionary alloc]init],@"DefaultConfig", nil],@"UniversalConfiguration",[[NSDictionary alloc]init],@"AppConfiguration", nil];
+	%init(_ungrouped);
       }
     }
         
-    %init(_ungrouped);
+    
 }
