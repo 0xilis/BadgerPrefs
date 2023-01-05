@@ -51,7 +51,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
    self.badgerCount = badgeCount;
    self.configForApp = configForApp;
  }
- NSDictionary *configInUse = [[NSDictionary alloc]initWithDictionary:[[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"]];
+ NSDictionary *configInUse = [[badgerPrefs objectForKey:configForApp]objectForKey:@"DefaultConfig"];
  long currentCount = 999999;
  for (NSString *countConfigStr in [[badgerPrefs objectForKey:configForApp]objectForKey:@"CountSpecificConfigs"]) {
    if (badgeCount >= [countConfigStr integerValue]) {
@@ -96,9 +96,7 @@ BOOL objectContainsIvar(Class _class, const char *name) {
             if ([keyNameInDefault isEqualToString:@"BadgeOption"]) {
               didEnableOption = YES;
             }
-            NSMutableDictionary *newDefaultConfig = [[NSMutableDictionary alloc]initWithDictionary:[[badgerMutablePrefs objectForKey:bundleID]objectForKey:@"DefaultConfig"]];
-            [newDefaultConfig setObject:[[[configsForApps objectForKey:bundleID]objectForKey:@"DefaultConfig"]objectForKey:keyNameInDefault] forKey:keyNameInDefault];
-            [[badgerMutablePrefs objectForKey:bundleID]setObject:newDefaultConfig forKey:@"DefaultConfig"];
+            [[[badgerMutablePrefs objectForKey:bundleID]objectForKey:@"DefaultConfig"]setObject:[[[configsForApps objectForKey:bundleID]objectForKey:@"DefaultConfig"]objectForKey:keyNameInDefault] forKey:keyNameInDefault];
           }
           //only add CountSpecificConfig to app if an app specifically has one already
           if ([[configsForApps objectForKey:bundleID]objectForKey:@"CountSpecificConfigs"]) {
