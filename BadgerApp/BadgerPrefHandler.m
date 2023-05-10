@@ -7,6 +7,11 @@
 
 #include "BadgerPrefHandler.h"
 
+#define BADGER_BUILD_NUMBER 6
+#define BADGER_CONFIG_FORMAT_VERSION 1
+#define BADGER_MINIMUM_COMPATIBILITY_VERSION 6
+#define BADGER_DISPLAY_VERSION_FOR_MINIMUM_COMPATIBILITY_VERSION "1.2.2"
+
 NSString *preferencesDirectory = @"/var/mobile/Library/Badger/Prefs/BadgerPrefs.plist";
 
 void badgerSaveUniversalPref(NSString *prefKey, id prefValue) {
