@@ -26,4 +26,12 @@ id badgerRetriveUniversalCountPref(long count, NSString *prefKey);
 id badgerRetriveAppCountPref(long count, NSString *prefApp, NSString *prefKey);
 NSArray *badgerRetriveConfigsWithUniversalPref(NSString *prefKey);
 NSArray *badgerRetriveConfigsWithAppPref(NSString *prefApp, NSString *prefKey);
+BOOL badgerAddMinimumCompatibilityVersion(void);
+BOOL badgerDoesHaveCompatibilitySafetyFlags(void);
+BOOL badgerIsCompatibleWithConfiguration(void);
+NSString *badgerGetMinimumCompatibilityVersion(void);
+id badgerGetMinimumCompatibilityBuildNumber(void);
+void badgerRemoveCurrentPref(long count, NSString *prefApp, NSString *prefKey);
+void badgerSaveCurrentPref(long count, NSString *prefApp, NSString *prefKey, id prefValue);
+id badgerRetriveCurrentPref(long count, NSString *prefApp, NSString *prefKey);
 #endif /* BadgerPrefHandler_h */
